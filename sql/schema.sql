@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS interactions (
     agent_id VARCHAR(50),
     outcome VARCHAR(100),
     notes TEXT,
+    wrapup_code VARCHAR(50),
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 

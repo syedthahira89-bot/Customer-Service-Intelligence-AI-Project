@@ -4,6 +4,8 @@ from pathlib import Path
 import pandas as pd
 from sqlalchemy import create_engine
 
+from etl.wrapup_codes import apply_wrapup_codes
+
 DB_URL = os.environ.get(
     "DB_URL",
     "postgresql+psycopg2://user:password@localhost:5432/customer_service"
@@ -51,6 +53,7 @@ def process_cases():
 
 def process_interactions():
     df = clean_dataframe(load_csv("interactions.csv"))
+    df = apply_wrapup_codes(df)
     upsert(df, "interactions")
 
 
