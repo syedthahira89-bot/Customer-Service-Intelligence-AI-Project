@@ -101,10 +101,59 @@ def _slugify_to_code(core_words: List[str], existing_codes: List[str]) -> str:
     return code
 
 
+# Minimum word overlap (as a fraction of the smaller keyword set) to treat a
+# newly seen topic as the same underlying trend as an existing dynamic code.
+SIMILARITY_THRESHOLD = 0.5
+
+
+def _dynamic_code_words(definition: Dict[str, object]) -> set:
+    words: set = set()
+    for keyword in definition.get("keywords", []):  # type: ignore[union-attr]
+        words.update(keyword.split())
+    return words
+
+
+def _find_similar_dynamic_code(core_words: List[str], dynamic_definitions: Dict[str, Dict[str, object]]) -> str | None:
+    """Find an existing dynamic code whose keywords substantially overlap with core_words."""
+    new_words = set(core_words)
+
+    best_code = None
+    best_overlap = 0.0
+
+    for code, definition in dynamic_definitions.items():
+        existing_words = _dynamic_code_words(definition)
+        if not existing_words:
+            continue
+
+        shared = new_words & existing_words
+        smaller_set_size = min(len(new_words), len(existing_words))
+        overlap_ratio = len(shared) / smaller_set_size if smaller_set_size else 0.0
+
+        if overlap_ratio >= SIMILARITY_THRESHOLD and overlap_ratio > best_overlap:
+            best_code = code
+            best_overlap = overlap_ratio
+
+    return best_code
+
+
 def _learn_new_wrapup_code(topic_text: str) -> str:
-    """Create and persist a new wrap-up code for a previously unseen topic."""
+    """Create and persist a new wrap-up code for a previously unseen topic.
+
+    If a similar topic has already been learned (based on shared core
+    keywords), the existing code is reused/expanded instead of creating a
+    near-duplicate code, so trend counts stay consolidated.
+    """
     dynamic_definitions = _load_dynamic_definitions()
     core_words = _extract_core_words(topic_text)
+
+    similar_code = _find_similar_dynamic_code(core_words, dynamic_definitions)
+    if similar_code:
+        new_keyword = " ".join(core_words)
+        keywords: List[str] = dynamic_definitions[similar_code]["keywords"]  # type: ignore[assignment]
+        if new_keyword not in keywords:
+            keywords.append(new_keyword)
+            _save_dynamic_definitions(dynamic_definitions)
+        return similar_code
 
     existing_codes = list(WRAPUP_CODE_DEFINITIONS.keys()) + list(dynamic_definitions.keys())
     new_code = _slugify_to_code(core_words, existing_codes)

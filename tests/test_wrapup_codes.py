@@ -60,6 +60,28 @@ def test_learn_new_false_falls_back_to_default():
     assert code == wrapup_codes.DEFAULT_WRAPUP_CODE
 
 
+def test_dissimilar_new_topic_reuses_wording_but_no_shared_words_creates_new_code(isolate_dynamic_codes_file):
+    first_code = wrapup_codes.classify_wrapup_code("Shipment tracking delay for courier")
+    second_code = wrapup_codes.classify_wrapup_code("Warehouse inventory mismatch report")
+
+    assert first_code != second_code
+    saved = json.loads(isolate_dynamic_codes_file.read_text())
+    assert first_code in saved
+    assert second_code in saved
+
+
+def test_overlapping_new_topic_consolidates_into_existing_dynamic_code(isolate_dynamic_codes_file):
+    first_code = wrapup_codes.classify_wrapup_code("Shipment tracking delay for courier")
+    # Shares 2 of 3 core words ("shipment", "tracking") with the first topic.
+    second_code = wrapup_codes.classify_wrapup_code("Shipment tracking confirmation request")
+
+    assert first_code == second_code
+
+    saved = json.loads(isolate_dynamic_codes_file.read_text())
+    assert len(saved) == 1
+    assert len(saved[first_code]["keywords"]) == 2
+
+
 def test_get_wrapup_code_label_known_and_unknown():
     assert wrapup_codes.get_wrapup_code_label("CLAIM_STATUS") == "Claim Status Inquiry"
     assert wrapup_codes.get_wrapup_code_label("NOT_A_REAL_CODE") == "NOT_A_REAL_CODE"
