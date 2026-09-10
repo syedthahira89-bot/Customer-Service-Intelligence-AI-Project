@@ -8,7 +8,8 @@ import dash
 from dash import dcc, html, Input, Output
 from sqlalchemy import create_engine
 
-from etl.recommendations import build_issue_output, get_recommendations
+from etl.recommendations import build_issue_output, get_recommendations, get_wrapup_code_recommendations
+from etl.analytics import get_wrapup_code_trends
 
 DB_URL = os.environ.get(
     "DB_URL",
@@ -56,6 +57,9 @@ def _query_csv(sql: str) -> pd.DataFrame:
 def render_page(selected_page, n_clicks, customer_id):
     if selected_page == "kpis":
         return build_kpi_page()
+
+    if selected_page == "trends":
+        return build_trending_topics_page()
 
     if not customer_id:
         return html.Div("Please enter a customer ID.")
@@ -115,6 +119,49 @@ def build_kpi_page():
             dcc.Graph(figure=bar_fig),
             html.H3("KPI Snapshot"),
             render_table(kpi_df),
+        ],
+        style={"padding": "20px"},
+    )
+
+
+def build_trending_topics_page():
+    interactions = query_dataframe("SELECT * FROM interactions")
+    trends = get_wrapup_code_trends(interactions)
+
+    if trends.empty:
+        return html.Div("No interaction data available to compute trends.", style={"padding": "20px"})
+
+    trend_fig = px.bar(
+        trends,
+        x="label",
+        y="count",
+        title="Trending Wrap-up Code Topics",
+        text="count",
+    )
+    trend_fig.update_layout(xaxis_title="Topic", yaxis_title="Count")
+
+    top_codes = trends.head(3)
+    recommendation_sections = []
+    for _, row in top_codes.iterrows():
+        recs = get_wrapup_code_recommendations(row["wrapup_code"])
+        recommendation_sections.append(
+            html.Div(
+                [
+                    html.H4(f"{row['label']} — {int(row['count'])} occurrences ({row['percentage']}%)"),
+                    html.Ul([html.Li(item) for item in recs], style={"paddingLeft": "20px", "lineHeight": "1.8"}),
+                ],
+                style={"marginBottom": "16px"},
+            )
+        )
+
+    return html.Div(
+        [
+            html.H2("Trending Topics & Recommendations"),
+            dcc.Graph(figure=trend_fig),
+            html.H3("Wrap-up Code Counts"),
+            render_table(trends, ["wrapup_code", "label", "count", "percentage"]),
+            html.H3("Recommendations to Resolve Top Issues"),
+            html.Div(recommendation_sections, style={"backgroundColor": "#ffffff", "borderRadius": "12px", "padding": "20px", "boxShadow": "0 2px 10px rgba(15, 23, 42, 0.05)"}),
         ],
         style={"padding": "20px"},
     )
@@ -371,6 +418,7 @@ app.layout = html.Div(
                     options=[
                         {"label": "Customer View", "value": "customer"},
                         {"label": "KPI Trends", "value": "kpis"},
+                        {"label": "Trending Topics", "value": "trends"},
                     ],
                     value="customer",
                     inline=True,
