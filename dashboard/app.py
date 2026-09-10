@@ -1,5 +1,4 @@
 import os
-import re
 from pathlib import Path
 
 import pandas as pd
@@ -7,6 +6,7 @@ import plotly.express as px
 import dash
 from dash import dcc, html, Input, Output
 from sqlalchemy import create_engine, text
+from sqlalchemy.pool import StaticPool
 
 from etl.recommendations import build_issue_output, get_recommendations, get_wrapup_code_recommendations
 from etl.analytics import get_wrapup_code_trends
@@ -21,28 +21,28 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 app = dash.Dash(__name__)
 
 
-def _load_csv_table(table_name: str) -> pd.DataFrame:
-    csv_path = DATA_DIR / f"{table_name}.csv"
-    if not csv_path.exists():
-        return pd.DataFrame()
-    return pd.read_csv(csv_path)
+def _build_local_fallback_engine():
+    """Load every CSV in the data directory into an in-memory SQLite DB.
+
+    This lets the dashboard fall back to real SQL (WHERE, LIMIT, joins, etc.)
+    when the primary database is unavailable, instead of hand-parsing SQL
+    with regular expressions.
+    """
+    local_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+
+    for csv_path in DATA_DIR.glob("*.csv"):
+        table_name = csv_path.stem
+        df = pd.read_csv(csv_path)
+        df.to_sql(table_name, local_engine, if_exists="replace", index=False)
+
+    return local_engine
 
 
-def _query_csv(sql: str, params: dict | None = None) -> pd.DataFrame:
-    match = re.search(r"FROM\s+([A-Za-z_]+)", sql, flags=re.IGNORECASE)
-    if not match:
-        return pd.DataFrame()
-
-    table_name = match.group(1).lower()
-    df = _load_csv_table(table_name)
-
-    if df.empty or not params:
-        return df
-
-    if "customer_id" in params:
-        return df[df["customer_id"] == params["customer_id"]]
-
-    return df
+fallback_engine = _build_local_fallback_engine()
 
 
 @app.callback(
@@ -68,7 +68,10 @@ def query_dataframe(sql: str, params: dict | None = None) -> pd.DataFrame:
     try:
         return pd.read_sql(text(sql), engine, params=params)
     except Exception:
-        return _query_csv(sql, params)
+        try:
+            return pd.read_sql(text(sql), fallback_engine, params=params)
+        except Exception:
+            return pd.DataFrame()
 
 
 def make_card(title: str, value: str, accent: str = "#1f77b4") -> html.Div:
