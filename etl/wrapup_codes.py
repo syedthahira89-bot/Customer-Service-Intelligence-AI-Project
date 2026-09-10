@@ -84,10 +84,13 @@ def _all_definitions() -> Dict[str, Dict[str, object]]:
     return combined
 
 
-def _slugify_to_code(text: str, existing_codes: List[str]) -> str:
+def _extract_core_words(text: str) -> List[str]:
     words = [w for w in re.findall(r"[a-zA-Z0-9]+", text.lower()) if w not in _STOPWORDS]
-    words = words[:3] or ["topic"]
-    base_code = "_".join(words).upper()
+    return words[:3] or ["topic"]
+
+
+def _slugify_to_code(core_words: List[str], existing_codes: List[str]) -> str:
+    base_code = "_".join(core_words).upper()
 
     code = base_code
     suffix = 2
@@ -101,18 +104,26 @@ def _slugify_to_code(text: str, existing_codes: List[str]) -> str:
 def _learn_new_wrapup_code(topic_text: str) -> str:
     """Create and persist a new wrap-up code for a previously unseen topic."""
     dynamic_definitions = _load_dynamic_definitions()
-    normalized_topic = topic_text.strip().lower()
+    core_words = _extract_core_words(topic_text)
 
     existing_codes = list(WRAPUP_CODE_DEFINITIONS.keys()) + list(dynamic_definitions.keys())
-    new_code = _slugify_to_code(normalized_topic, existing_codes)
+    new_code = _slugify_to_code(core_words, existing_codes)
 
     dynamic_definitions[new_code] = {
         "label": topic_text.strip().title(),
-        "keywords": [normalized_topic],
+        "keywords": [" ".join(core_words)],
     }
     _save_dynamic_definitions(dynamic_definitions)
 
     return new_code
+
+
+def _keyword_matches(keyword: str, text: str) -> bool:
+    """A keyword matches if it appears verbatim, or all of its words appear in the text."""
+    if keyword in text:
+        return True
+    words = keyword.split()
+    return bool(words) and all(word in text for word in words)
 
 
 def classify_wrapup_code(call_reason: str = "", notes: str = "", learn_new: bool = True) -> str:
@@ -131,7 +142,7 @@ def classify_wrapup_code(call_reason: str = "", notes: str = "", learn_new: bool
 
     for code, definition in _all_definitions().items():
         keywords: List[str] = definition["keywords"]  # type: ignore[assignment]
-        if any(keyword in text for keyword in keywords):
+        if any(_keyword_matches(keyword, text) for keyword in keywords):
             return code
 
     if learn_new and call_reason.strip():
