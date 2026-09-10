@@ -8,7 +8,8 @@ from dash import dcc, html, Input, Output
 from sqlalchemy import create_engine, text
 from sqlalchemy.pool import StaticPool
 
-from etl.recommendations import build_issue_output, get_recommendations, get_wrapup_code_recommendations
+from etl.issue_classifier import build_issue_output, get_recommendations
+from etl.wrapup_recommendations import get_wrapup_code_recommendations
 from etl.analytics import get_wrapup_code_trends
 
 DB_URL = os.environ.get(

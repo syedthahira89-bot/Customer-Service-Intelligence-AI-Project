@@ -20,7 +20,8 @@ It includes:
 - `etl/pipeline.py` - ETL pipeline
 - `etl/wrapup_codes.py` - wrap-up code classification and dynamic code learning
 - `etl/analytics.py` - KPI and wrap-up code trend aggregation
-- `etl/recommendations.py` - issue classification and recommended actions
+- `etl/wrapup_recommendations.py` - recommended actions for trending wrap-up code topics
+- `etl/issue_classifier.py` - rule-based + ML customer issue classification and recommended actions
 - `dashboard/app.py` - Dash dashboard
 - `data/` - sample data files
 - `tests/` - unit tests (pytest)
@@ -56,7 +57,7 @@ pip install -r requirements.txt
 python -m pytest tests -v
 ```
 
-Tests cover wrap-up code classification/learning ([tests/test_wrapup_codes.py](tests/test_wrapup_codes.py)) and recommendation generation ([tests/test_recommendations.py](tests/test_recommendations.py)). CI runs the same suite automatically on push/PR via `.github/workflows/python-tests.yml`.
+Tests cover wrap-up code classification/learning ([tests/test_wrapup_codes.py](tests/test_wrapup_codes.py)) and recommendation generation ([tests/test_wrapup_recommendations.py](tests/test_wrapup_recommendations.py)). CI runs the same suite automatically on push/PR via `.github/workflows/python-tests.yml`.
 
 ## Docker Compose
 
@@ -144,7 +145,7 @@ In a real production deployment, you should add:
 
 ## AI recommendation engine
 
-The rule-based + ML classifier lives in `etl/recommendations.py`.
+The rule-based + ML classifier lives in `etl/issue_classifier.py`.
 
 - Rule-based logic uses claim, submission, PPW, case, and interaction signals
 - ML layer uses a trained text classifier for issue type prediction
