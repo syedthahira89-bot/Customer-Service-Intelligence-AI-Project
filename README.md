@@ -12,13 +12,18 @@ It includes:
 - SQL schema for core entities
 - Python ETL pipeline to load source data into PostgreSQL
 - Dash dashboard with charts, customer insights, AI-assisted issue classification, and recommended actions
+- Wrap-up code trending topics: interactions are auto-classified into standardized reason codes (with new codes learned and persisted for previously unseen topics) so the dashboard can surface the most common customer issues and recommended actions to resolve them
 
 ## Folder structure
 
 - `sql/schema.sql` - database schema
 - `etl/pipeline.py` - ETL pipeline
+- `etl/wrapup_codes.py` - wrap-up code classification and dynamic code learning
+- `etl/analytics.py` - KPI and wrap-up code trend aggregation
+- `etl/recommendations.py` - issue classification and recommended actions
 - `dashboard/app.py` - Dash dashboard
 - `data/` - sample data files
+- `tests/` - unit tests (pytest)
 - `requirements.txt` - Python dependencies
 
 ## Setup
@@ -43,6 +48,15 @@ It includes:
    ```bash
    python dashboard/app.py
    ```
+
+## Running tests
+
+```bash
+pip install -r requirements.txt
+python -m pytest tests -v
+```
+
+Tests cover wrap-up code classification/learning ([tests/test_wrapup_codes.py](tests/test_wrapup_codes.py)) and recommendation generation ([tests/test_recommendations.py](tests/test_recommendations.py)). CI runs the same suite automatically on push/PR via `.github/workflows/python-tests.yml`.
 
 ## Docker Compose
 

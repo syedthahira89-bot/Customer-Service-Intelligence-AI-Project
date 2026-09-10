@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.express as px
 import dash
 from dash import dcc, html, Input, Output
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 from etl.recommendations import build_issue_output, get_recommendations, get_wrapup_code_recommendations
 from etl.analytics import get_wrapup_code_trends
@@ -28,7 +28,7 @@ def _load_csv_table(table_name: str) -> pd.DataFrame:
     return pd.read_csv(csv_path)
 
 
-def _query_csv(sql: str) -> pd.DataFrame:
+def _query_csv(sql: str, params: dict | None = None) -> pd.DataFrame:
     match = re.search(r"FROM\s+([A-Za-z_]+)", sql, flags=re.IGNORECASE)
     if not match:
         return pd.DataFrame()
@@ -36,14 +36,11 @@ def _query_csv(sql: str) -> pd.DataFrame:
     table_name = match.group(1).lower()
     df = _load_csv_table(table_name)
 
-    where_match = re.search(r"WHERE\s+(.+)$", sql, flags=re.IGNORECASE)
-    if not where_match or df.empty:
+    if df.empty or not params:
         return df
 
-    where_clause = where_match.group(1)
-    customer_id_match = re.search(r"customer_id\s*=\s*'([^']+)'", where_clause, flags=re.IGNORECASE)
-    if customer_id_match:
-        return df[df["customer_id"] == customer_id_match.group(1)]
+    if "customer_id" in params:
+        return df[df["customer_id"] == params["customer_id"]]
 
     return df
 
@@ -67,11 +64,11 @@ def render_page(selected_page, n_clicks, customer_id):
     return build_customer_page(customer_id)
 
 
-def query_dataframe(sql: str) -> pd.DataFrame:
+def query_dataframe(sql: str, params: dict | None = None) -> pd.DataFrame:
     try:
-        return pd.read_sql(sql, engine)
+        return pd.read_sql(text(sql), engine, params=params)
     except Exception:
-        return _query_csv(sql)
+        return _query_csv(sql, params)
 
 
 def make_card(title: str, value: str, accent: str = "#1f77b4") -> html.Div:
@@ -171,17 +168,18 @@ def build_customer_page(customer_id: str = "CUST001"):
     if not customer_id:
         return html.Div("Please enter a customer ID.")
 
-    customer = query_dataframe(f"SELECT * FROM customers WHERE customer_id = '{customer_id}'")
+    params = {"customer_id": customer_id}
+    customer = query_dataframe("SELECT * FROM customers WHERE customer_id = :customer_id", params)
     if customer.empty:
         return html.Div("No customer found.")
 
     customer = customer.iloc[0]
 
-    claims = query_dataframe(f"SELECT * FROM claims WHERE customer_id = '{customer_id}'")
-    cases = query_dataframe(f"SELECT * FROM cases WHERE customer_id = '{customer_id}'")
-    interactions = query_dataframe(f"SELECT * FROM interactions WHERE customer_id = '{customer_id}'")
-    ppw = query_dataframe(f"SELECT * FROM ppw_records WHERE customer_id = '{customer_id}'")
-    submissions = query_dataframe(f"SELECT * FROM submissions WHERE customer_id = '{customer_id}'")
+    claims = query_dataframe("SELECT * FROM claims WHERE customer_id = :customer_id", params)
+    cases = query_dataframe("SELECT * FROM cases WHERE customer_id = :customer_id", params)
+    interactions = query_dataframe("SELECT * FROM interactions WHERE customer_id = :customer_id", params)
+    ppw = query_dataframe("SELECT * FROM ppw_records WHERE customer_id = :customer_id", params)
+    submissions = query_dataframe("SELECT * FROM submissions WHERE customer_id = :customer_id", params)
     policies = query_dataframe("SELECT * FROM vendor_policies LIMIT 10")
 
     if not interactions.empty:
