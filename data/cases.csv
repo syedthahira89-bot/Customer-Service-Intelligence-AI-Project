@@ -1,0 +1,3 @@
+case_id,claim_id,customer_id,case_status,case_type,assigned_agent_id,priority
+CASE001,CLM001,CUST001,Open,Claims Follow-Up,AGT100,High
+CASE002,CLM002,CUST002,Closed,Vendor Inquiry,AGT200,Low

@@ -1,0 +1,3 @@
+policy_id,vendor_name,policy_category,policy_title,policy_text,effective_date,version_no
+POL001,VendorA,Claims,Submission Rules,Claims must include all required supporting documents,2026-01-01,V1
+POL002,VendorB,Procedure,Medical Review,Medical review requires complete PPW documentation,2026-01-01,V1
