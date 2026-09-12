@@ -1,4 +1,4 @@
-sure# Customer Service Dashboard
+# Customer Service Dashboard
 
 ## About the Developer
 
@@ -10,7 +10,9 @@ Connect with me on LinkedIn: https://www.linkedin.com/in/thahira-syed-2827ba426
 
 ## GitHub
 
-Explore more projects and code: https://github.com/yourusername
+Explore more projects and code: https://github.com/syedthahira89-bot/Customer-Service-Intelligence-AI-Project
+
+## Project Overview
 
 This project provides a starter architecture for a centralized customer service dashboard that combines six data sources:
 - Genesys
