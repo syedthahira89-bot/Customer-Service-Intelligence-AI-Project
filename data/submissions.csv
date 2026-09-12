@@ -1,0 +1,3 @@
+submission_id,claim_id,customer_id,submission_status,submitted_at,document_count,error_code,rejection_reason
+SUB001,CLM001,CUST001,Pending,2026-01-11 10:00:00,2,ERR-101,Missing supporting documents
+SUB002,CLM002,CUST002,Approved,2026-02-16 15:30:00,1,,

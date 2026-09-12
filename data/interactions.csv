@@ -1,0 +1,13 @@
+interaction_id,customer_id,source_system,interaction_type,interaction_timestamp,call_duration_seconds,call_reason,agent_id,outcome,notes,wrapup_code
+INT001,CUST001,Genesys,call,2026-09-01 10:00:00,420,Claim status update,AGT100,Resolved,Customer asked for claim status.,CLAIM_STATUS
+INT002,CUST002,Genesys,call,2026-09-02 12:30:00,300,Policy clarification,AGT200,Resolved,Customer requested policy info.,POLICY_GUIDANCE
+INT003,CUST001,Genesys,call,2026-09-03 09:15:00,360,Claim status update,AGT100,Resolved,Customer followed up on claim status.,CLAIM_STATUS
+INT004,CUST002,Smartly,chat,2026-09-03 11:05:00,180,Submission rejected missing documents,AGT200,Resolved,Customer resubmitted documents.,SUBMISSION_ISSUE
+INT005,CUST001,JURIS,call,2026-09-04 14:20:00,300,PPW medical record missing,AGT100,Pending,Waiting on provider records.,PPW_GAP
+INT006,CUST002,Genesys,call,2026-09-04 16:40:00,240,Policy clarification,AGT200,Resolved,Customer asked about vendor procedure.,POLICY_GUIDANCE
+INT007,CUST001,Genesys,call,2026-09-05 10:10:00,540,Urgent escalation complaint,AGT100,Escalated,Customer requested supervisor.,ESCALATION
+INT008,CUST002,Smartly,chat,2026-09-05 12:50:00,200,Billing refund issue,AGT200,Resolved,Refund processed for overcharge.,BILLING_ISSUE
+INT009,CUST001,Portal,web,2026-09-06 08:30:00,150,Portal login error,AGT100,Resolved,Reset customer password.,TECHNICAL_ISSUE
+INT010,CUST002,Genesys,call,2026-09-06 15:05:00,280,Claim status update,AGT200,Resolved,Customer asked for claim status.,CLAIM_STATUS
+INT011,CUST001,Genesys,call,2026-09-07 09:45:00,320,Submission rejected missing documents,AGT100,Resolved,Requested corrected submission.,SUBMISSION_ISSUE
+INT012,CUST002,JURIS,call,2026-09-07 13:15:00,260,General inquiry about account,AGT200,Resolved,No specific issue found.,GENERAL_INQUIRY

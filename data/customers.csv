@@ -1,0 +1,3 @@
+customer_id,customer_name,dob,member_id,phone,email
+CUST001,Quinn Smith,1990-05-14,MEM001,555-0101,quinn@example.com
+CUST002,Alex Johnson,1985-09-21,MEM002,555-0102,alex@example.com
