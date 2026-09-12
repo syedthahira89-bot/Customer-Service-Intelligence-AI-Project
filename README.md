@@ -1,44 +1,50 @@
-# Customer Service Dashboard
+# Customer Service Intelligence AI Project
+
+A portfolio-ready analytics and AI solution for customer service operations, designed to unify customer, claims, case, interaction, PPW, and policy data into a single operational dashboard.
 
 ## About the Developer
 
-I’m a data and AI-focused professional building practical, business-impacting solutions that turn raw operational data into actionable insights. This project reflects my interest in customer service intelligence, automation, and analytics-driven decision support.
+I’m a data and AI-focused professional building practical, business-impacting solutions that convert operational complexity into fast, actionable insights. This project demonstrates my interest in customer service intelligence, analytics engineering, and AI-assisted decision support.
 
-## LinkedIn
+## Connect
 
-Connect with me on LinkedIn: https://www.linkedin.com/in/thahira-syed-2827ba426
+- LinkedIn: https://www.linkedin.com/in/thahira-syed-2827ba426
+- GitHub: https://github.com/syedthahira89-bot/Customer-Service-Intelligence-AI-Project
 
-## GitHub
+## Why this project matters
 
-Explore more projects and code: https://github.com/syedthahira89-bot/Customer-Service-Intelligence-AI-Project
+Customer service teams often work with fragmented systems across claims, case management, PPW documentation, submissions, and policy sources. This project centralizes those signals into a single dashboard and applies rule-based + AI-driven issue classification to help surface the most likely customer problem and recommended next steps.
 
-## Project Overview
+## Key capabilities
 
-This project provides a starter architecture for a centralized customer service dashboard that combines six data sources:
-- Genesys
-- JURIS
-- TAMS
-- SIR
-- Infosource
-- Smartly
+- Unified customer view with claims, cases, interactions, PPW, and submissions
+- SQL-based ETL pipeline to normalize and centralize operational data
+- KPI dashboards for service health and trend analysis
+- Wrap-up code classification for recurring customer issues
+- AI-assisted issue detection and recommendation engine
+- PostgreSQL-backed architecture for enterprise-style data workflows
 
-It includes:
-- SQL schema for core entities
-- Python ETL pipeline to load source data into PostgreSQL
-- Dash dashboard with charts, customer insights, AI-assisted issue classification, and recommended actions
-- Wrap-up code trending topics: interactions are auto-classified into standardized reason codes (with new codes learned and persisted for previously unseen topics) so the dashboard can surface the most common customer issues and recommended actions to resolve them
+## Tech stack
 
-## Folder structure
+- Python
+- Dash
+- Plotly
+- SQLAlchemy
+- PostgreSQL
+- Pandas
+- Pytest
+
+## Project structure
 
 - `sql/schema.sql` - database schema
 - `etl/pipeline.py` - ETL pipeline
-- `etl/wrapup_codes.py` - wrap-up code classification and dynamic code learning
-- `etl/analytics.py` - KPI and wrap-up code trend aggregation
-- `etl/wrapup_recommendations.py` - recommended actions for trending wrap-up code topics
-- `etl/issue_classifier.py` - rule-based + ML customer issue classification and recommended actions
+- `etl/wrapup_codes.py` - wrap-up code classification and dynamic learning
+- `etl/analytics.py` - KPI and trend aggregation
+- `etl/wrapup_recommendations.py` - issue recommendations
+- `etl/issue_classifier.py` - rule-based + ML customer issue classification
 - `dashboard/app.py` - Dash dashboard
 - `data/` - sample data files
-- `tests/` - unit tests (pytest)
+- `tests/` - unit tests
 - `requirements.txt` - Python dependencies
 
 ## Setup
