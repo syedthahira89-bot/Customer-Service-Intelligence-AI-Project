@@ -1,5 +1,7 @@
 # Customer Service Intelligence AI Project
 
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB) ![Dash](https://img.shields.io/badge/Dash-Interactive%20Dashboard-0D9488) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1) ![AI](https://img.shields.io/badge/AI-Issue%20Classification-FF6B6B)
+
 A portfolio-ready analytics and AI solution for customer service operations, designed to unify customer, claims, case, interaction, PPW, and policy data into a single operational dashboard.
 
 ## About the Developer
@@ -14,6 +16,17 @@ I’m a data and AI-focused professional building practical, business-impacting 
 ## Why this project matters
 
 Customer service teams often work with fragmented systems across claims, case management, PPW documentation, submissions, and policy sources. This project centralizes those signals into a single dashboard and applies rule-based + AI-driven issue classification to help surface the most likely customer problem and recommended next steps.
+
+## Business impact
+
+- Reduces time spent chasing fragmented customer data across multiple systems
+- Highlights recurring service issues and operational bottlenecks
+- Helps agents make faster, evidence-based decisions
+- Improves customer experience by surfacing likely root causes and recommended actions
+
+## Architecture at a glance
+
+Data sources -> ETL + normalization -> PostgreSQL -> analytics + classification -> Dash dashboard
 
 ## Key capabilities
 
